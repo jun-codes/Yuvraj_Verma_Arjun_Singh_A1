@@ -10,7 +10,7 @@ plt.show()
 
 def loss_function(m, b, points):
     total_error = 0
-    for x in points:
+    for i in range(len(points)):
         x = points.iloc[i].Year
         y = points.iloc[i]['Life expectancy ']
         total_error += (y - (m * x + b))** 2
@@ -31,5 +31,16 @@ def gradient_descent(m_now, b_now, points, learning_rate):
 
 m = 0
 b = 0
-learning_rate = 0.0001
-num_iterations = 10000
+learning_rate = 0.0000001
+num_iterations = 1000
+for i in range(num_iterations):
+    m, b = gradient_descent(m, b, india, learning_rate)
+
+plt.scatter(india['Year'], india['Life expectancy '], marker='o')
+plt.plot(india['Year'], [m*x + b for x in india['Year']], color='red')
+plt.xlabel("Year")
+plt.ylabel("Life Expectancy")
+plt.title("Linear Fit for India Life Expectancy")
+plt.show()
+
+print("done")
