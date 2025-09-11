@@ -1,24 +1,17 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-data = pd.read_csv('life expectancy.csv')
-india = data[data['Country'] == 'India']
-plt.scatter(india['Year'], india['Life expectancy '], marker='o')
-plt.xlabel("Year")
-plt.ylabel("Life Expectancy")
-plt.title("Life Expectancy of India over Years")
-plt.show()
+import numpy as np
 
-def loss_function(m, b, points):
+data = pd.read_csv('life expectancy.csv')
+data.columns = data.columns.str.strip()
+
+def calculate_mse(m, b, points):
     total_error = 0
     for i in range(len(points)):
-        x = points.iloc[i].Year
-        y = points.iloc[i]['Life expectancy ']
+        x = points.iloc[i].Year_scaled
+        y = points.iloc[i]['Life expectancy']
         total_error += (y - (m * x + b))** 2
     return total_error / float(len(points))
-
-india = data[data['Country'] == 'India'].copy()
-
-india['Year_scaled'] = (india['Year'] - 2000) /10
 
 def gradient_descent(m_now, b_now, points, learning_rate):
     m_gradient = 0
@@ -26,33 +19,47 @@ def gradient_descent(m_now, b_now, points, learning_rate):
     N = float(len(points))
     for i in range(len(points)):
         x = points.iloc[i].Year_scaled
-        y = points.iloc[i]['Life expectancy ']
+        y = points.iloc[i]['Life expectancy']
         m_gradient += -(2/N) * x * (y - (m_now * x + b_now))
         b_gradient += -(2/N) * (y - (m_now * x + b_now))
     m_new = m_now - learning_rate * m_gradient
     b_new = b_now - learning_rate * b_gradient
     return m_new, b_new
 
+training_data = data[['Year', 'Life expectancy']].copy()
+training_data.dropna(subset=['Life expectancy'], inplace=True)
+
+min_year = training_data['Year'].min()
+training_data['Year_scaled'] = (training_data['Year'] - min_year) / 10.0
+
 m = 0
 b = 0
-learning_rate = 0.01  
-num_iterations = 5000
+learning_rate = 0.1  
+num_iterations = 1000
 
 for i in range(num_iterations):
-    m, b = gradient_descent(m, b, india, learning_rate)
-    if i % 500 == 0:
-        print(f"Iteration {i}: slope m={m:.4f}, intercept b={b:.4f}")
+    m, b = gradient_descent(m, b, training_data, learning_rate)
+    if i % 100 == 0:
+        current_mse = calculate_mse(m, b, training_data)
+        print(f"Iteration {i}: MSE = {current_mse:.4f}")
 
+final_mse = calculate_mse(m, b, training_data)
+final_rmse = np.sqrt(final_mse)
 
-plt.scatter(india['Year'], india['Life expectancy '], marker='o', label='Actual Data')
+print(f"MSE: {final_mse:.4f}")
+print(f"RMSE: {final_rmse:.4f} years")
 
-predicted_y = [m * ((x - 2000) / 10) + b for x in india['Year']]
-plt.plot(india['Year'], predicted_y, color='red', label='Linear Fit')
+plt.figure(figsize=(12, 8))
+plt.scatter(data['Year'], data['Life expectancy'], alpha=0.1, label='(All Countries)')
+
+predicted_y = [m * ((x - min_year) / 10.0) + b for x in data['Year']]
+plt.plot(data['Year'], predicted_y, color='red', linewidth=3, label='Linear Fit')
 
 plt.xlabel("Year")
 plt.ylabel("Life Expectancy")
-plt.title("Linear Fit for India Life Expectancy")
+plt.title("Global Life Expectancy vs. Year")
 plt.legend()
+plt.grid(True)
 plt.show()
 
 print("done")
