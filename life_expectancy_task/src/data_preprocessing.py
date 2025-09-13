@@ -24,7 +24,7 @@ def preprocess_data(data):
     if "Country" in data.columns:
         country_dummies = pd.get_dummies(data["Country"], prefix="Country", dtype=int)
         data = pd.concat([data.drop("Country", axis=1), country_dummies], axis=1)
-        print("One-hot encoded 'Country' column.")
+        print("one hot encoded 'Country' column.")
 
     print("preprocessing complete")
     return data
