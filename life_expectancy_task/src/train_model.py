@@ -1,3 +1,4 @@
+import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -40,18 +41,25 @@ def gradient_descent(weights_now, bias_now, features, target, learning_rate):
     
     return new_weights, new_bias
 
-features = data.select_dtypes(include=np.number).drop(columns=['Life expectancy'])
+country_features = list(data.filter(like="Country_").columns)
+
+selected_features_list = [
+    'Income composition of resources', 'Schooling', 'HIV/AIDS', 'Adult Mortality',
+    'BMI', 'Diphtheria', 'Polio', 'thinness  1-19 years', 'GDP', 'Alcohol'
+]
+
+features = data[selected_features_list]
 target = data['Life expectancy']
 
 features_scaled = (features - features.min()) / (features.max() - features.min())
 X_train = features_scaled
 y_train = target
 
-num_features = X_train.shape[1]
+num_features = X_train.shape[1] #no of columns
 weights = [0] * num_features
 bias = 0
-learning_rate = 0.1
-num_iterations = 1000
+learning_rate = 0.2
+num_iterations = 400
 
 for i in range(num_iterations):
     weights, bias = gradient_descent(weights, bias, X_train, y_train, learning_rate)
@@ -68,14 +76,22 @@ print(f"Final RMSE: {final_rmse:.4f} years")
 all_predictions = [predict(X_train.iloc[i], weights, bias) for i in range(len(X_train))]
 
 plt.figure(figsize=(10, 8))
-plt.scatter(y_train, all_predictions, alpha=0.3, label='model predictions')
-plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], '--r', linewidth=2, label=' correct Fit Line')
-plt.xlabel("actual life expectancy")
-plt.ylabel("predicted life expectancy")
-plt.title("actual vs. predicted llife expectancy")
+plt.scatter(y_train, all_predictions, alpha=0.3, label='Model Predictions')
+plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], '--r', linewidth=2, label='Perfect Fit Line')
+plt.xlabel("Actual Life Expectancy")
+plt.ylabel("Predicted Life Expectancy")
+plt.title("Actual vs. Predicted Life Expectancy")
 plt.legend()
 plt.grid(True)
 plt.show()
 
 print("done")
 
+
+model1 = {"weights": weights, "bias": bias, "features": selected_features_list}
+import os
+
+os.makedirs("life_expectancy_task/models", exist_ok=True)
+
+with open("life_expectancy_task/models/regression_model1.pkl", "wb") as f:
+    pickle.dump(model1, f)
