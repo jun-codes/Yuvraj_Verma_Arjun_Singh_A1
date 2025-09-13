@@ -9,10 +9,7 @@ raw_data = pd.read_csv('data/train_data.csv')
 raw_data.columns = raw_data.columns.str.strip()
 data = preprocess_data(raw_data)
 
-def predict(features, weights, bias):
-    return np.dot(features, weights) + bias
-
-def calculate_mse(weights, bias, features, target):
+def loss_function(weights, bias, features, target):
     y_predicted = predict(features, weights, bias)
     return np.mean((target - y_predicted) ** 2)
 
@@ -49,31 +46,11 @@ num_iterations = 50000
 for i in range(num_iterations):
     weights, bias = gradient_descent(weights, bias, X_train, y_train, learning_rate)
     if i % 100 == 0:
-        current_mse = calculate_mse(weights, bias, X_train, y_train)
+        current_mse = loss_function(weights, bias, X_train, y_train)
         print(f"Iteration {i}: MSE = {current_mse:.4f}")
 
-final_mse = calculate_mse(weights, bias, X_train, y_train)
+final_mse = loss_function(weights, bias, X_train, y_train)
 final_rmse = np.sqrt(final_mse)
-
-all_predictions = predict(X_train, weights, bias)
-
-ss_res = np.sum((y_train - all_predictions) ** 2)
-ss_tot = np.sum((y_train - np.mean(y_train)) ** 2)
-r2_score = 1 - (ss_res / ss_tot)
-
-print(f"MSE: {final_mse:.4f}")
-print(f"RMSE: {final_rmse:.4f} years")
-print(f"R^2 score: {r2_score:.4f}")
-
-plt.figure(figsize=(10, 8))
-plt.scatter(y_train, all_predictions, alpha=0.3, label='Model Predictions', color='pink')
-plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], '--r', linewidth=2, label='Perfect Fit Line')
-plt.xlabel("Actual Life Expectancy")
-plt.ylabel("Predicted Life Expectancy")
-plt.title("Actual vs. Predicted Life Expectancy")
-plt.legend()
-plt.grid(True)
-plt.show()
 
 print("done")
 
