@@ -70,10 +70,16 @@ for i in range(num_iterations):
 final_mse = calculate_mse(weights, bias, X_train, y_train)
 final_rmse = np.sqrt(final_mse)
 
-print(f"Final MSE: {final_mse:.4f}")
-print(f"Final RMSE: {final_rmse:.4f} years")
+
 
 all_predictions = [predict(X_train.iloc[i], weights, bias) for i in range(len(X_train))]
+ss_res = np.sum((y_train - all_predictions) ** 2)
+ss_tot = np.sum((y_train - np.mean(y_train)) ** 2)
+r2_score = 1 - (ss_res / ss_tot)
+
+print(f"Final MSE: {final_mse:.4f}")
+print(f"Final RMSE: {final_rmse:.4f} years")
+print(f"R^2 Score: {r2_score:.4f}")
 
 plt.figure(figsize=(10, 8))
 plt.scatter(y_train, all_predictions, alpha=0.3, label='Model Predictions')
