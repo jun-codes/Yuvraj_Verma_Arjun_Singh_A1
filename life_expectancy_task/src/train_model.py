@@ -56,7 +56,17 @@ for i in range(num_iterations):
 final_mse = loss_function(weights, bias, X_train, y_train)
 final_rmse = np.sqrt(final_mse)
 
-
+plt.figure(figsize=(10, 8))
+plt.scatter(y_test, y_pred, alpha=0.3, color="pink", label="Predictions")
+mn = float(min(y_test.min(), y_pred.min()))
+mx = float(max(y_test.max(), y_pred.max()))
+plt.plot([mn, mx], [mn, mx], "--r", linewidth=2, label="Perfect fit")
+plt.xlabel("Actual life Expectancy")
+plt.ylabel("Predicted life Expectancy")
+plt.title("Actual vs Predicted life Expectancy")
+plt.legend()
+plt.grid(True)
+plt.show()
 print("done")
 
 model3 = {"weights": weights, "bias": bias, "features": selected_features_list}

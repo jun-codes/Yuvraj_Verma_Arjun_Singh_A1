@@ -1,0 +1,4 @@
+Regression Metrics:
+MSE: 342806595.34
+RMSE: 18515.04
+R^2 score: 0.76

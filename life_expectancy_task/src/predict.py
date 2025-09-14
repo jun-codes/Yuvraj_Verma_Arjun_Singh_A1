@@ -3,6 +3,7 @@ import pickle
 import pandas as pd
 import numpy as np
 from data_preprocessing import preprocess_data
+import matplotlib.pyplot as plt
 
 def predict(features, weights, bias):
     return np.dot(features, weights) + bias
@@ -38,6 +39,15 @@ def main():
     residual_sum = np.sum((y_test - all_predictions) ** 2)
     total_sum = np.sum((y_test - np.mean(y_test)) ** 2)
     r2_score = 1 - (residual_sum / total_sum)
+
+    plt.figure(figsize=(10, 8))
+    plt.scatter(y_test, all_predictions, alpha=0.3, color="pink")
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], "--r", linewidth=2)
+    plt.xlabel("actual life expectancy")
+    plt.ylabel("predicted life expectancy")
+    plt.title("actual vs predicted life expectancy")
+    plt.grid(True)
+    plt.show()
 
     with open(args.metrics_output_path, "w") as f:
         f.write("Regression Metrics:\n")
