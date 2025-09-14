@@ -23,12 +23,16 @@ def gradient_descent(weights_now, bias_now, features, target, learning_rate):
     new_bias = bias_now - learning_rate * bias_gradient
     return new_weights, new_bias
 
+def predict(features, weights, bias):
+    return np.dot(features, weights) + bias
+
+status_features = list(data.filter(like="Status_").columns)
 country_features = list(data.filter(like="Country_").columns)
 
 selected_features_list = [
     'Income composition of resources', 'Schooling', 'HIV/AIDS', 'Adult Mortality',
     'BMI', 'Diphtheria', 'Polio', 'thinness  1-19 years', 'GDP', 'Alcohol'
-] + country_features
+] + country_features + status_features
 
 features = data[selected_features_list]
 target = data['Life expectancy']
@@ -40,23 +44,24 @@ y_train = target.values
 num_features = X_train.shape[1]
 weights = np.zeros(num_features)
 bias = 0
-learning_rate = 0.25
+learning_rate = 0.15
 num_iterations = 50000
 
 for i in range(num_iterations):
     weights, bias = gradient_descent(weights, bias, X_train, y_train, learning_rate)
     if i % 100 == 0:
         current_mse = loss_function(weights, bias, X_train, y_train)
-        print(f"Iteration {i}: MSE = {current_mse:.4f}")
+        print(f"Iteration {i}: MSE = {current_mse:.2f}")
 
 final_mse = loss_function(weights, bias, X_train, y_train)
 final_rmse = np.sqrt(final_mse)
 
+
 print("done")
 
-model2 = {"weights": weights, "bias": bias, "features": selected_features_list}
+model3 = {"weights": weights, "bias": bias, "features": selected_features_list}
 
 os.makedirs("life_expectancy_task/models", exist_ok=True)
 
-with open("life_expectancy_task/models/regression_model2.pkl", "wb") as f:
-    pickle.dump(model2, f)
+with open("life_expectancy_task/models/regression_model3.pkl", "wb") as f:
+    pickle.dump(model3, f)
