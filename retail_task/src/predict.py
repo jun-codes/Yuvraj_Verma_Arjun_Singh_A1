@@ -28,7 +28,27 @@ def main():
     data = preprocess_data(raw_data)
 
     features = data[selected_features_list]
-    features_scaled = (features - features.min()) / (features.max() - features.min())
+
+    scaling_min = model["scaling_min"]
+    scaling_range = model["scaling_range"]
+
+    numerical_features = [
+        'age', 
+        'membership_years', 
+        'number_of_children', 
+        'product_rating',
+        'product_review_count',
+        'days_since_last_purchase'
+    ]
+
+    categorical_dummy_features = [col for col in selected_features_list if col not in numerical_features]
+
+    numerical_data = features[numerical_features]
+    numerical_scaled = (numerical_data - scaling_min) / scaling_range
+
+    categorical_data = features[categorical_dummy_features]
+
+    features_scaled = pd.concat([numerical_scaled, categorical_data], axis=1)
     X_test = features_scaled.values
     y_test = data["avg_purchase_value"].values
 
