@@ -28,32 +28,23 @@ def preprocess_data(df):
     all_selected_columns = numerical_features + categorical_features + target_variable
     df_selected = df[all_selected_columns]
 
-    # Fill numerical Nans with the mean of the column
+    # fillin numerical blanks with the mean of the column
     for col in numerical_features:
         df_selected[col].fillna(df_selected[col].mean(), inplace=True)
         
-    # Fill categorical Nans with the mode
+    # fillin categorical blanks with the mode
     for col in categorical_features:
         df_selected[col].fillna(df_selected[col].mode()[0], inplace=True)
 
     df_processed = pd.get_dummies(df_selected, columns=categorical_features, drop_first=True)
 
-    print("Data preprocessing complete.")
-    print(f"Original number of columns: {len(df.columns)}")
-    print(f"Columns after processing: {len(df_processed.columns)}")
-    
+  
     return df_processed
 
 if __name__ == '__main__':
         raw_data = pd.read_csv('data/Retail.csv') 
-        
         processed_data = preprocess_retail_data(raw_data)
         
-        print("First 5 rows of processed data:")
-        print(processed_data.head())
-        
-        print("\nData types of processed data:")
-        print(processed_data.info())
     
 
     
