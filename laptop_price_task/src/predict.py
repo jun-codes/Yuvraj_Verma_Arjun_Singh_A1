@@ -23,7 +23,7 @@ def main():
 
     weights = model["weights"]
     bias = model["bias"]
-    # remove duplicate feature names (keep first occurrence)
+    #keep first occurrence only
     selected_features = list(dict.fromkeys(model["features"]))
 
     raw_data = pd.read_csv(args.data_path)
@@ -35,7 +35,7 @@ def main():
         if col not in proc_data.columns:
             proc_data[col] = 0
 
-    # drop duplicate columns in case preprocess introduced them
+    # drop duplicate columns if preprocess introduced them
     X = proc_data[selected_features].copy()
     X = X.loc[:, ~X.columns.duplicated()]
 

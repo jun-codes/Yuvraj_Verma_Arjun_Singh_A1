@@ -34,6 +34,11 @@ selected_features_list = [
     'BMI', 'Diphtheria', 'Polio', 'thinness  1-19 years', 'GDP', 'Alcohol'
 ] + country_features + status_features #satus/country 1 hot encoded
 
+for col in selected_features_list:
+    if col not in data.columns:
+        data[col] = 0  
+
+data = data[selected_features_list]
 features = data[selected_features_list]
 target = data['Life expectancy']
 
